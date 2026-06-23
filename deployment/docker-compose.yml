@@ -1,0 +1,32 @@
+version: '3.8'
+# ASSIGNED TO: BE-4 (DevOps coordination)
+# Local development setup with Docker Compose
+
+services:
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: ../deployment/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - DATABASE_NAME=ai_customer_care
+    depends_on:
+      - mongodb
+    env_file:
+      - ../backend/.env
+
+  # TODO: Add frontend service for production
+  # TODO: Add Redis for session/caching (Phase 2)
+  # TODO: Add ChromaDB service (Phase 2)
+
+volumes:
+  mongo_data:

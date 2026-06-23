@@ -1,0 +1,22 @@
+# AI Customer Care Platform - Knowledge Base
+# ASSIGNED TO: AI-4 (expand this file with real product FAQs)
+# This file is ingested by the RAG engine (rag-engine/ingest.py)
+# Add more Q&A pairs, product docs, policy docs below
+
+Q: What is your refund policy?
+A: We offer a 30-day money-back guarantee on all plans. Contact support to initiate a refund.
+
+Q: How do I reset my password?
+A: Go to the login page, click "Forgot Password", and enter your registered email address.
+
+Q: What payment methods do you accept?
+A: We accept Visa, MasterCard, American Express, UPI, and Net Banking.
+
+Q: How do I upgrade my subscription?
+A: Log in to your account, go to Settings > Subscription, and select a higher plan.
+
+Q: How long does delivery take?
+A: Standard delivery takes 5-7 business days. Express delivery takes 1-2 business days.
+
+# TODO: Add more FAQs, product documentation, troubleshooting guides
+# Supported formats: .txt, .pdf, .csv (see ingest.py for loader)
