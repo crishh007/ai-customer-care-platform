@@ -1,0 +1,64 @@
+# ============================================================
+#  Render Blueprint — Auto-deploy from GitHub
+#  Docs: https://render.com/docs/blueprint-spec
+# ============================================================
+
+services:
+
+  # --- FastAPI Backend ---
+  - type: web
+    name: ai-customer-care-api
+    runtime: python
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: OPENAI_API_KEY
+        sync: false  # Must be set manually in Render dashboard
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: MONGODB_URL
+        sync: false
+      - key: DATABASE_NAME
+        value: ai_customer_care
+      - key: LANGCHAIN_TRACING_V2
+        value: "true"
+      - key: LANGSMITH_API_KEY
+        sync: false
+      - key: LANGSMITH_ENDPOINT
+        value: https://api.smith.langchain.com
+      - key: LANGSMITH_PROJECT
+        value: ai-customer-care
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a secure random string
+      - key: CHROMA_DB_DIR
+        value: chroma_db
+      - key: CHROMA_COLLECTION_NAME
+        value: customer_care_docs
+
+  # --- Node.js Frontend (uncomment when ready) ---
+  # - type: web
+  #   name: ai-customer-care-frontend
+  #   runtime: node
+  #   region: oregon
+  #   plan: free
+  #   branch: main
+  #   rootDir: frontend
+  #   buildCommand: npm install && npm run build
+  #   startCommand: npm start
+  #   envVars:
+  #     - key: NODE_VERSION
+  #       value: "18"
+  #     - key: FASTAPI_URL
+  #       fromService:
+  #         name: ai-customer-care-api
+  #         type: web
+  #         property: hostport

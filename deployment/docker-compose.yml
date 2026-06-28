@@ -1,32 +1,80 @@
 version: '3.8'
-# ASSIGNED TO: BE-4 (DevOps coordination)
-# Local development setup with Docker Compose
+
+# ============================================================
+#  AI Customer Care Platform — Local Development Stack
+#  Run: docker-compose -f deployment/docker-compose.yml up
+# ============================================================
 
 services:
+
+  # --- FastAPI Backend ---
+  backend:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.backend
+    container_name: customer_care_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=development
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8000
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - CHROMA_COLLECTION_NAME=customer_care_docs
+      - DOCUMENT_DIR=knowledge-base
+      # Pass through from .env file
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/customer_care}
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-true}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY}
+      - LANGSMITH_ENDPOINT=${LANGSMITH_ENDPOINT:-https://api.smith.langchain.com}
+      - LANGSMITH_PROJECT=${LANGSMITH_PROJECT:-ai-customer-care}
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-change-in-production}
+    depends_on:
+      chroma:
+        condition: service_started
+      mongodb:
+        condition: service_started
+    networks:
+      - platform-network
+    restart: unless-stopped
+
+  # --- ChromaDB Vector Store ---
+  chroma:
+    image: chromadb/chroma:0.5.0
+    container_name: customer_care_chromadb
+    ports:
+      - "8001:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - platform-network
+    restart: unless-stopped
+
+  # --- MongoDB ---
   mongodb:
     image: mongo:7.0
+    container_name: customer_care_mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-
-  backend:
-    build:
-      context: ../backend
-      dockerfile: ../deployment/Dockerfile.backend
-    ports:
-      - "8000:8000"
-    environment:
-      - MONGODB_URL=mongodb://mongodb:27017
-      - DATABASE_NAME=ai_customer_care
-    depends_on:
-      - mongodb
-    env_file:
-      - ../backend/.env
-
-  # TODO: Add frontend service for production
-  # TODO: Add Redis for session/caching (Phase 2)
-  # TODO: Add ChromaDB service (Phase 2)
+    networks:
+      - platform-network
+    restart: unless-stopped
 
 volumes:
+  chroma_data:
+    driver: local
   mongo_data:
+    driver: local
+
+networks:
+  platform-network:
+    driver: bridge
