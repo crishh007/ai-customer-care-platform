@@ -71,13 +71,11 @@ jobs:
             echo "has_eslint=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Set up Node.js 18
+      - name: Set up Node.js 22
         if: steps.check-frontend.outputs.has_eslint == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          node-version: '22'
 
       - name: Install dependencies
         if: steps.check-frontend.outputs.has_eslint == 'true'
