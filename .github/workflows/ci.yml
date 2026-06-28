@@ -1,0 +1,92 @@
+name: CI Pipeline
+
+# ============================================================
+#  Runs on every PR to main:
+#    - pytest for FastAPI backend
+#    - eslint for Node.js frontend (when it exists)
+#  Failing tests BLOCK the merge.
+# ============================================================
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+
+  # ---- FastAPI Backend Tests ----
+  backend-tests:
+    name: Backend — pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run pytest
+        env:
+          APP_ENV: testing
+          MONGODB_URL: mongodb://localhost:27017
+          DATABASE_NAME: ai_customer_care_test
+          LANGCHAIN_TRACING_V2: "false"
+        run: |
+          python -m pytest tests/ -v --tb=short
+
+  # ---- Node.js Frontend Lint ----
+  frontend-lint:
+    name: Frontend — eslint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    # Only run if frontend has package.json (skip if frontend not ready)
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if frontend exists
+        id: check-frontend
+        run: |
+          if [ -f "package.json" ] && grep -q '"eslint"' package.json 2>/dev/null; then
+            echo "has_eslint=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_eslint=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Node.js 18
+        if: steps.check-frontend.outputs.has_eslint == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        if: steps.check-frontend.outputs.has_eslint == 'true'
+        run: npm ci
+
+      - name: Run ESLint
+        if: steps.check-frontend.outputs.has_eslint == 'true'
+        run: npx eslint . --ext .js,.jsx,.ts,.tsx
+
+      - name: Skip — Frontend not ready
+        if: steps.check-frontend.outputs.has_eslint != 'true'
+        run: echo "⏭️ Frontend ESLint skipped — no eslint config found in package.json"
