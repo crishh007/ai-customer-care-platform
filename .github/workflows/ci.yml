@@ -79,7 +79,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.check-frontend.outputs.has_eslint == 'true'
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         if: steps.check-frontend.outputs.has_eslint == 'true'
