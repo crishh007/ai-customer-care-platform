@@ -1,0 +1,64 @@
+# ============================================================
+#  Voice AI Module — .gitignore
+# ============================================================
+
+# --- Environment & Secrets ---
+.env
+*.env
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+*.whl
+
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+ENV/
+.virtualenv/
+
+# --- Generated audio files ---
+uploads/
+outputs/
+*.wav
+*.mp3
+*.webm
+*.ogg
+*.flac
+*.m4a
+
+# --- Whisper model cache ---
+.cache/
+~/.cache/huggingface/
+
+# --- Test artifacts ---
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.log
+
+# --- IDE ---
+.vscode/settings.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# --- Docker ---
+.dockerignore
+
+# --- Jupyter ---
+*.ipynb
+.ipynb_checkpoints/
