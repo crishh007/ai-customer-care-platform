@@ -144,7 +144,7 @@ export default function Dashboard() {
           <div className="mt-4 bg-[#111] p-4 border border-white/5">
             <p className="font-mono text-xs text-gray-400">
               <span className="text-[#ff4500]">{"{ reason: "}</span>
-              "{churnData?.reason || 'Awaiting telemetry...'}"
+              &quot;{churnData?.reason || 'Awaiting telemetry...'}&quot;
               <span className="text-[#ff4500]">{" }"}</span>
             </p>
           </div>

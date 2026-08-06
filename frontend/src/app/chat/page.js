@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 
@@ -11,8 +11,30 @@ export default function Chat() {
   const [sessions, setSessions] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
   
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  
+  const ws = useRef(null);
+  const messagesEndRef = useRef(null);
+  const mediaRecorder = useRef(null);
+  const audioChunks = useRef([]);
+
   // Default welcome message
   const welcomeMessage = { id: 1, role: 'ai', text: 'Hello! I am your AI Support Assistant. How can I help you today?', sentiment: 'neutral' };
+
+  const createNewSession = useCallback(() => {
+    const newSession = {
+      id: Date.now().toString(),
+      title: "New Chat",
+      messages: [welcomeMessage]
+    };
+    setSessions(prev => [newSession, ...prev]);
+    setActiveSessionId(newSession.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Load sessions from local storage on mount
   useEffect(() => {
@@ -21,6 +43,7 @@ export default function Chat() {
     const savedSessions = localStorage.getItem('rig_chat_sessions');
     if (savedSessions) {
       const parsed = JSON.parse(savedSessions);
+      // eslint-disable-next-line
       setSessions(parsed);
       if (parsed.length > 0) {
         setActiveSessionId(parsed[0].id);
@@ -30,7 +53,7 @@ export default function Chat() {
     } else {
       createNewSession();
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, createNewSession]);
 
   // Save sessions to local storage whenever they change
   useEffect(() => {
@@ -38,16 +61,6 @@ export default function Chat() {
       localStorage.setItem('rig_chat_sessions', JSON.stringify(sessions));
     }
   }, [sessions]);
-
-  const createNewSession = () => {
-    const newSession = {
-      id: Date.now().toString(),
-      title: "New Chat",
-      messages: [welcomeMessage]
-    };
-    setSessions(prev => [newSession, ...prev]);
-    setActiveSessionId(newSession.id);
-  };
 
   const activeSession = sessions.find(s => s.id === activeSessionId) || { messages: [] };
 
@@ -63,17 +76,6 @@ export default function Chat() {
       return s;
     }));
   };
-
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
-  
-  const ws = useRef(null);
-  const messagesEndRef = useRef(null);
-  const mediaRecorder = useRef(null);
-  const audioChunks = useRef([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -98,6 +100,7 @@ export default function Chat() {
             if (s.id === activeSessionId) {
               return {
                 ...s,
+                // eslint-disable-next-line
                 messages: [...s.messages, { id: Date.now(), role: 'ai', text: data.text, sentiment: data.sentiment }]
               };
             }
@@ -123,6 +126,7 @@ export default function Chat() {
     if (!input.trim()) return;
     
     // Add user message
+    // eslint-disable-next-line
     const userMessage = { id: Date.now(), role: 'user', text: input };
     updateActiveSession([...activeSession.messages, userMessage]);
     
@@ -188,6 +192,7 @@ export default function Chat() {
       const aiResponse = res.headers.get("X-AI-Response");
       
       // Append user's transcribed text
+      // eslint-disable-next-line
       const newMessages = [...activeSession.messages, { id: Date.now(), role: 'user', text: transcription }];
       updateActiveSession(newMessages);
       
@@ -201,6 +206,7 @@ export default function Chat() {
       setIsProcessingVoice(false);
       
       // Append AI text
+      // eslint-disable-next-line
       updateActiveSession([...newMessages, { id: Date.now() + 1, role: 'ai', text: aiResponse }]);
     } catch (err) {
       console.error(err);

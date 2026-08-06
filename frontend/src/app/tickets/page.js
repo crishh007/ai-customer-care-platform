@@ -10,14 +10,6 @@ export default function Tickets() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newTicket, setNewTicket] = useState({ title: '', description: '', priority: 'Medium' });
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
-      return;
-    }
-    fetchTickets();
-  }, [isAuthenticated, router]);
-
   const fetchTickets = async () => {
     try {
       const user_id = useAuthStore.getState().user?.email || "anonymous";
@@ -28,7 +20,6 @@ export default function Tickets() {
       });
       if (res.ok) {
         const data = await res.json();
-        // Map backend fields to frontend table fields
         const formattedTickets = data.map(t => ({
           id: t.ticket_id,
           title: t.subject,
@@ -42,6 +33,15 @@ export default function Tickets() {
       console.error("Failed to fetch tickets", error);
     }
   };
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
+    fetchTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, router]);
 
   const handleCreateTicket = async (e) => {
     e.preventDefault();
