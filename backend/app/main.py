@@ -28,6 +28,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 @app.on_event("startup")
@@ -37,9 +38,14 @@ async def startup_event():
 
 # Include routers
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
-# app.include_router(auth.router, prefix="/api/auth", tags=["auth"])  # BE-2
-# app.include_router(tickets.router, prefix="/api/tickets", tags=["tickets"])  # BE-2
-# app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])  # BE-2
+from app.api import auth
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])  # BE-2
+from app.api import tickets
+app.include_router(tickets.router, prefix="/api/tickets", tags=["tickets"])  # BE-2
+from app.api import analytics
+app.include_router(analytics.router, prefix="/api/analytics", tags=["analytics"])  # BE-2
+from app.api import crm
+app.include_router(crm.router, prefix="/api/crm", tags=["CRM"])  # BE-2
 
 @app.get("/")
 async def root():
