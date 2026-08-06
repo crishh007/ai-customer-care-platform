@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 10;
+  --background-end-rgb: 10, 10, 10;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: var(--font-inter), sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.05em;
+}
+
+/* Tech Card / Bento Box */
+.tech-card {
+  background-color: #111;
+  border: 1px solid #ffffff1a;
+  padding: 2rem;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 200ms;
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-card:hover {
+  border-color: #ff450080;
+}
+
+/* Monospace Labels */
+.tech-label {
+  font-family: monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #ff4500;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+/* Primary Button */
+.btn-primary {
+  background-color: #ff4500;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 200ms;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-primary:hover {
+  background-color: #e03e00;
+}
+
+/* Outline Button */
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #ff45004d;
+  color: #e5e7eb;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition-property: all;
+  transition-duration: 200ms;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-outline:hover {
+  border-color: #ff4500;
+  color: white;
+}
+
+/* Form Inputs */
+.input-field {
+  width: 100%;
+  background-color: #161616;
+  border: 1px solid #ffffff1a;
+  padding: 0.75rem;
+  color: white;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+}
+.input-field:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: #ff4500;
+}
+
+/* Navigation Links */
+.nav-link {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #9ca3af;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: 150ms;
+  letter-spacing: 0.025em;
+}
+.nav-link:hover {
+  color: white;
+}
+
+/* Table styling */
+.tech-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  text-align: left;
+}
+
+.tech-table th {
+  font-family: monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6b7280;
+  padding: 1rem;
+  border-bottom: 1px solid #ffffff1a;
+  background-color: #161616;
+}
+
+.tech-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #ffffff0d;
+  font-family: monospace;
+  color: #d1d5db;
+}
+
+.tech-table tr:hover td {
+  background-color: #161616;
+  color: white;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scanline::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 69, 0, 0.3);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+}
