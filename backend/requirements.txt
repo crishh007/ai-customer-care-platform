@@ -22,3 +22,4 @@ langchain-huggingface
 sentence-transformers
 pinecone-client
 langchain-pinecone
+python-multipart
