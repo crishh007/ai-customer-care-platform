@@ -44,21 +44,26 @@ services:
       - key: CHROMA_COLLECTION_NAME
         value: customer_care_docs
 
-  # --- Node.js Frontend (uncomment when ready) ---
-  # - type: web
-  #   name: ai-customer-care-frontend
-  #   runtime: node
-  #   region: oregon
-  #   plan: free
-  #   branch: main
-  #   rootDir: frontend
-  #   buildCommand: npm install && npm run build
-  #   startCommand: npm start
-  #   envVars:
-  #     - key: NODE_VERSION
-  #       value: "18"
-  #     - key: FASTAPI_URL
-  #       fromService:
-  #         name: ai-customer-care-api
-  #         type: web
-  #         property: hostport
+  # --- Node.js Frontend ---
+  - type: web
+    name: ai-customer-care-frontend
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "18"
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: ai-customer-care-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_PUBLIC_WS_URL
+        fromService:
+          name: ai-customer-care-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL

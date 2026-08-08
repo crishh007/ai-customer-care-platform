@@ -83,8 +83,12 @@ export default function Chat() {
       return;
     }
 
-    // Connect to WebSocket
-    ws.current = new WebSocket('ws://localhost:8000/api/chat/ws');
+    // Connect to WebSocket using dynamic URL
+    const wsBaseUrl = process.env.NEXT_PUBLIC_WS_URL 
+      ? process.env.NEXT_PUBLIC_WS_URL.replace('http', 'ws')
+      : 'ws://localhost:8000';
+      
+    ws.current = new WebSocket(`${wsBaseUrl}/api/chat/ws`);
     
     ws.current.onopen = () => setIsConnected(true);
     ws.current.onclose = () => setIsConnected(false);
@@ -178,7 +182,8 @@ export default function Chat() {
     
     try {
       const token = useAuthStore.getState().token;
-      const res = await fetch('http://localhost:8000/api/chat/voice', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiUrl}/api/chat/voice`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

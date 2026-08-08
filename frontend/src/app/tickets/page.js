@@ -13,7 +13,8 @@ export default function Tickets() {
   const fetchTickets = async () => {
     try {
       const user_id = useAuthStore.getState().user?.email || "anonymous";
-      const res = await fetch(`http://localhost:8000/api/tickets/list/${user_id}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiUrl}/api/tickets/list/${user_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -48,7 +49,8 @@ export default function Tickets() {
     e.preventDefault();
     try {
       const user_id = useAuthStore.getState().user?.email || "anonymous";
-      const res = await fetch('http://localhost:8000/api/tickets/create', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiUrl}/api/tickets/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
